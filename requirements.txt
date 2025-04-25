@@ -1,0 +1,26 @@
+# Core dependencies
+fastapi==0.104.1    # pydantic is now part of fastapi
+uvicorn==0.23.2
+python-multipart==0.0.6
+
+# OpenAI API
+openai==0.28.0
+
+# Data processing and analysis
+pandas==2.1.1
+matplotlib==3.8.0
+
+# Utilities
+python-dotenv==1.0.0
+requests==2.31.0
+
+# Web scraping tools
+selenium==4.14.0
+beautifulsoup4==4.12.2
+
+# Error handling and logging
+traceback2==1.4.0
+
+# JSON handling
+jsonschema==4.19.1
+
