@@ -1,10 +1,11 @@
+from typing import Any
 import pandas as pd
 import os
 import json
 from datetime import datetime
 
-DATA_FILE = "dataset/index.csv"
-LOG_FILE = "dataset/actions_log.json"
+DATA_FILE = "database/index.csv"
+LOG_FILE = "database/actions_log.json"
 
 DEFAULT_COURSES = "MATH101,PHYS101,COMP101"
 
@@ -19,7 +20,7 @@ def initialize_data_file():
             df = pd.DataFrame([{"courses": DEFAULT_COURSES}])
             df.to_csv(DATA_FILE, index=False)
 
-def read_data():
+def read_data() -> pd.DataFrame:
     initialize_data_file()
     return pd.read_csv(DATA_FILE).to_dict(orient="records")
 
@@ -27,7 +28,7 @@ def write_data(data):
     df = pd.DataFrame(data)
     df.to_csv(DATA_FILE, index=False)
 
-def log_action(action_name, params):
+def log_action(action_name: str, params: dict[str, Any]):
     """يسجل كل أكشن في ملف JSON"""
     os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
     log_entry = {
@@ -46,7 +47,7 @@ def log_action(action_name, params):
     with open(LOG_FILE, "w", encoding="utf-8") as f:
         json.dump(logs, f, indent=4, ensure_ascii=False)
 
-def drop_course(student_id, course_code):
+def drop_course(student_id: str, course_code: str):
     data = read_data()
     student = data[0]
     courses = student["courses"].split(',')
@@ -57,7 +58,7 @@ def drop_course(student_id, course_code):
     log_action("drop_course", {"student_id": student_id, "course_code": course_code})
     return f"✅ Dropped {course_code} for student {student_id}"
 
-def manipulate_course(student_id, old_code, new_code):
+def manipulate_course(student_id: str, old_code: str, new_code: str):
     data = read_data()
     student = data[0]
     courses = student["courses"].split(',')
@@ -70,7 +71,7 @@ def manipulate_course(student_id, old_code, new_code):
     return f"✅ Changed {old_code} to {new_code} for student {student_id}"
 
 
-def add_course(student_id, course_code):
+def add_course(student_id: str, course_code: str):
     data = read_data()
     student = data[0]
     courses = student["courses"].split(',')

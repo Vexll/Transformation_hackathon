@@ -1,4 +1,7 @@
 env/
+.venv
 .idea
 __pycache__
 .env
+chatbot_2/dataset
+chatbot_2/faiss_index
