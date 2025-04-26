@@ -16,7 +16,7 @@ TOOLS = {
 }
 
 TOOL_DESCRIPTIONS = """
-1. general: use this when you want to answer the user or dont know what to use.
+1. general: use this when you want dont know what to use.
 2. search_knowledge_base: Search university policies and info.
 3. drop_course: Drop a course (only course_code needed).
 4. add_course: Add a course (only course_code needed).
@@ -29,16 +29,15 @@ class Plan(BaseModel):
     params: dict[str, Any]
 
 class KSUAgent:
-
-    def get_plan(self, user_input: str) -> Plan:
+    def get_plan(self, user_input: str, memory: list[dict] = list()) -> Plan:
         try:
             plan_response = openai.ChatCompletion.create(
                 model="gpt-4",
                 temperature=0.3,
                 messages=[
                     {"role": "system", "content": f"""You are a planning model. Decide which tool to use. Assume student_id = 443102109 automatically. Available tools:\n{TOOL_DESCRIPTIONS}\n\nReturn only JSON like {{"tool": "...", "params": {{...}}}}."""},
-                    {"role": "user", "content": user_input}
                 ]
+                + memory + [{"role": "user", "content": user_input}]
             )
 
             res = plan_response['choices'][0]['message']['content']
@@ -50,13 +49,13 @@ class KSUAgent:
             print(f'ERROR: {e}')
             return f'ERROR: {e}'
     
-    def execute_plan(self, user_input: str, plan: Plan) -> str:
+    def execute_plan(self, user_input: str, plan: Plan, memory: list[dict] = list()) -> str:
         try:
             if plan.tool in {"drop_course", "add_course", "excuse_course", "manipulate_course"}:
                 plan.params["student_id"] = "443102109"
             
             if plan.tool == "general" or plan.tool not in TOOLS:
-                return self.respond(user_input)
+                return self.respond(user_input, memory)
 
 
             if plan.tool == "search_knowledge_base":
@@ -72,6 +71,7 @@ class KSUAgent:
                     temperature=0.5,
                     messages=[
                         {"role": "system", "content": "أنت مساعد ذكي لجامعة الملك سعود. استخدم المستندات والمراجع للإجابة فقط."},
+                    ] + memory +[
                         {"role": "user", "content": f"السؤال: {user_input}\n\nالمستندات:\n\n{context}\n\nأجب بدقة."}
                     ]
                 )
@@ -84,12 +84,13 @@ class KSUAgent:
             print(f'ERROR: {e}')
             return f'ERROR: {e}'
     
-    def respond(self, user_input: str) -> str:
+    def respond(self, user_input: str, memory: list[dict] = list()) -> str:
         response = openai.ChatCompletion.create(
             model="gpt-4",
             temperature=0.3,
             messages=[
                 {"role": "system", "content": f"You are a helpful assistan for king saud university."},
+            ] + memory + [
                 {"role": "user", "content": user_input}
             ]
         )

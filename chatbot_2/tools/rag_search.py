@@ -9,10 +9,11 @@ EMBEDDING_MODEL = "text-embedding-ada-002"
 INDEX_CSV_PATH = "chatbot_2/dataset/index.csv"
 CHUNK_CSV_PATH = "chatbot_2/dataset/chunks.csv"
 FILES_DIR = "chatbot_2/dataset"
-FAISS_DIR = "chatbot_2/faiss_index"
+FAISS_DIR = "chatbot_2/dataset"
 FAISS_PATH = os.path.join(FAISS_DIR, 'faiss.index')
 
 def embed_texts(texts: list[str]) -> list[np.array]:
+    # max batch size = 2048
     # response = openai.Embedding.create(
     #     model=EMBEDDING_MODEL,
     #     input=texts
@@ -69,6 +70,7 @@ def setup_faiss_index():
     
     # Embed all chunks
     chunk_texts = chunks_df['chunk_text'].tolist()
+    chunk_texts = [str(t) for t in chunk_texts]
     embeddings = embed_texts(chunk_texts)
     
     # Add chunks to faiss
@@ -77,10 +79,10 @@ def setup_faiss_index():
     
     # Save the FAISS index
     os.makedirs(FAISS_DIR, exist_ok=True)
-    faiss.write_index(index, os.path.join(FAISS_DIR, "faiss.index"))
+    faiss.write_index(index, FAISS_PATH)
 
 def search_faiss(query: str, top_k=3) -> list[int]:
-    index = faiss.read_index(os.path.join(FAISS_DIR, "faiss.index"))
+    index = faiss.read_index(FAISS_PATH)
     
     # Embed the query
     query_vec = embed_texts([query])[0]  # Get the first (and only) embedding
