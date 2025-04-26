@@ -41,7 +41,7 @@ TOOLS = {
 
 TOOL_DESCRIPTIONS = """
 1. general: use this when you want dont know what to use.
-2. search_knowledge_base: Search university policies and info (only "query" needed in params).
+2. search_knowledge_base: Search FAQs, university policies, procedures, and info, use this when you need content to answer the user query (only "query" needed in params).
 3. drop_course: Drop a course (only "course_code" needed in params).
 4. add_course: Add a course (only "course_code" needed in params).
 5. excuse_course: Excuse a course (only "course_code" needed in params).
@@ -83,6 +83,8 @@ class KSUAgent:
                 plan.params["student_id"] = "443102109"
             
             if plan.tool == "general" or plan.tool not in TOOLS:
+                if plan.tool not in TOOLS:
+                    print(f'wrong tool: {plan}')
                 response = self.respond(user_input)
                 self.memory.add_interaction(user_input, response)
                 return response
@@ -92,7 +94,7 @@ class KSUAgent:
                 docs, refs = TOOLS[plan.tool](**plan.params)
                 context = ""
                 for d, r in zip(docs, refs):
-                    context += "المستند" + ":" + d + "\n" + "مرجع" + ":" + r + "\n\n"
+                    context += "مرجع" + ":" + r + "\n" + "المستند" + ":" + d + "\n\n"
                 
                 print(f"RAG CONTENT:\n\n{context}")
 

@@ -146,7 +146,7 @@ def setup_faiss_index():
     os.makedirs(FAISS_DIR, exist_ok=True)
     faiss.write_index(index, FAISS_PATH)
 
-def search_faiss(query: str, top_k=3) -> list[int]:
+def search_faiss(query: str, top_k=5) -> list[int]:
     index = faiss.read_index(FAISS_PATH)
 
     query_vec = embed_query(query)[0]
