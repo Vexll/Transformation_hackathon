@@ -1,12 +1,12 @@
-import os
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from typing import Optional
-import openai
 from chatbot_2.tools.agent import KSUAgent
 from chatbot_2.tools.utils import init
 
 init()
+
+agent = KSUAgent()
+print('starting...')
 # Start FastAPI
 app = FastAPI()
 
@@ -20,11 +20,6 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     response: str
 
-agent = KSUAgent()
-
-# Store conversation memory for each chatbot
-preorder_memory = []
-
 
 # --- API Endpoint ---
 @app.post("/ksu-chat", response_model=ChatResponse)
@@ -35,19 +30,14 @@ async def handle_chat(request: ChatRequest):
     - **query**: The user's message.
     - **image_data**: Optional base64 encoded image.
     """
-    global chats_memory
-
     try:
-        result = agent.get_plan(
-            request.query,
-            # memory=chats_memory
-        )
-
-        # Update global memory with new conversation
-        # chats_memory = result["memory"]
+        plan = agent.get_plan(request.query)
+        response = agent.execute_plan(request.query, plan)
+        print(f"RESPONSE: {response}")
+        
 
         # Return only the response
-        return {"response": result["response"]}
+        return {"response": response}
 
     except Exception as e:
         print(f"Error processing request: {e}")  # Log the exception
@@ -57,6 +47,5 @@ async def handle_chat(request: ChatRequest):
 @app.post("/clear")
 async def clear_memory():
     """Clear the chatbot's memory"""
-    global chats_memory
-    chats_memory = []
+    agent.memory.memory = []
     return {"message": "chatbot memory cleared successfully"}

@@ -18,4 +18,5 @@ while True:
     plan = agent.get_plan(user_input)
     response = agent.execute_plan(user_input, plan)
     
+    
     print(f"\n🤖 Assistant:\n{response}\n")

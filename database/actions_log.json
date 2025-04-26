@@ -6,5 +6,21 @@
             "student_id": "443102109",
             "course_code": "101 math"
         }
+    },
+    {
+        "timestamp": "2025-04-26T17:59:23.932830",
+        "action": "drop_course",
+        "params": {
+            "student_id": "443102109",
+            "course_code": "all"
+        }
+    },
+    {
+        "timestamp": "2025-04-26T17:59:23.941943",
+        "action": "excuse_course",
+        "params": {
+            "student_id": "443102109",
+            "course_code": "all"
+        }
     }
 ]

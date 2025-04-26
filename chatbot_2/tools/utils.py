@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 import openai
 
-from tools.rag_search import CHUNK_CSV_PATH, FAISS_PATH, setup_chunk_index, setup_faiss_index
+from chatbot_2.tools.rag_search import CHUNK_CSV_PATH, FAISS_PATH, setup_chunk_index, setup_faiss_index
 
 
 def init():
